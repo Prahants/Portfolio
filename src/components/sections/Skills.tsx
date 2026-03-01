@@ -1,236 +1,427 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 
 const skills = [
-  { name: "Python", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" },
-  { name: "React", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
-  { name: "Node.js", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
-  { name: "Git", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" },
-  { name: "TypeScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
-  { name: "MongoDB", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
-  { name: "PostgreSQL", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
-  { name: "Next.js", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" },
-  { name: "GitHub", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" },
-  { name: "Figma", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg" },
-  { name: "Tailwind", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" },
-  { name: "Vercel", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg" },
+    { name: "C++", icon: "/logos/cplusplus-original.svg", color: "#00599C" },
+    { name: "FastAPI", icon: "/logos/fastapi-original.svg", color: "#009688" },
+    { name: "Firebase", icon: "/logos/firebase-plain.svg", color: "#FFCA28" },
+    { name: "HuggingFace", icon: "/logos/huggingface_logo-noborder.svg", color: "#FFD21E" },
+    { name: "JavaScript", icon: "/logos/javascript-original.svg", color: "#F7DF1E" },
+    { name: "MongoDB", icon: "/logos/mongodb-original.svg", color: "#47A248" },
+    { name: "Next.js", icon: "/logos/nextjs-original.svg", color: "#ffffff" },
+    { name: "Node.js", icon: "/logos/nodejs-original.svg", color: "#339933" },
+    { name: "PostgreSQL", icon: "/logos/postgresql-original.svg", color: "#336791" },
+    { name: "Postman", icon: "/logos/postman-original.svg", color: "#FF6C37" },
+    { name: "Python", icon: "/logos/python-original.svg", color: "#3776AB" },
+    { name: "PyTorch", icon: "/logos/pytorch-original.svg", color: "#EE4C2C" },
+    { name: "React", icon: "/logos/react-original.svg", color: "#61DAFB" },
+    { name: "Scikit-Learn", icon: "/logos/scikitlearn-original.svg", color: "#F7931E" },
+    { name: "Tailwind", icon: "/logos/tailwindcss-original.svg", color: "#06B6D4" },
+    { name: "TensorFlow", icon: "/logos/tensorflow-original.svg", color: "#FF6F00" },
 ];
 
 export default function Skills() {
-    const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
-    const frameRef = useRef<number>(0);
-    const hoverRef = useRef<boolean>(false);
-    const activeRef = useRef<boolean>(false);
-    
-    const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-    const [activeSkill, setActiveSkill] = useState<typeof skills[0] | null>(null);
+    const mountRef = useRef<HTMLDivElement>(null);
+    const [hoveredSkill, setHoveredSkill] = useState<{ name: string; color: string; x: number; y: number } | null>(null);
 
     useEffect(() => {
-        let t = 0;
+        const container = mountRef.current;
+        if (!container) return;
 
-        // Distribute items evenly on a sphere using Fibonacci lattice equivalent
-        const items = skills.map((_, i) => {
-            const phi = Math.acos(-1 + (2 * i) / skills.length);
-            const theta = Math.sqrt(skills.length * Math.PI) * phi;
-            return {
-                x: Math.cos(theta) * Math.sin(phi),
-                y: Math.sin(theta) * Math.sin(phi),
-                z: Math.cos(phi),
-            };
+        // ─── Scene, Camera, Renderer ───────────────────────────
+        const scene = new THREE.Scene();
+
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100);
+        camera.position.z = 3.2;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.sortObjects = true;
+        container.appendChild(renderer.domElement);
+
+        // ─── Wireframe Globe Grid ──────────────────────────────
+        const sphereGeo = new THREE.SphereGeometry(1.05, 64, 64);
+        const wireMat = new THREE.MeshBasicMaterial({
+            color: 0x4338ca,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.06,
+            depthWrite: false,
         });
+        const wireGlobe = new THREE.Mesh(sphereGeo, wireMat);
 
-        const animate = () => {
-            // Pause rotation if hovered OR if a skill is actively clicked/centered
-            if (!hoverRef.current && !activeRef.current) {
-                t -= 0.005; // rotation speed
-            }
+        // ─── Globe Group (icons rotate with the globe) ─────────
+        const globeGroup = new THREE.Group();
+        scene.add(globeGroup);
+        globeGroup.add(wireGlobe);
 
-            const radius = window.innerWidth < 768 ? 140 : 220;
+        // ─── Fibonacci Sphere Distribution ─────────────────────
+        const total = skills.length;
+        const RADIUS = 1.0;
+        const iconSize = 0.18;
 
-            itemsRef.current.forEach((item, i) => {
-                if (!item) return;
+        const positions: THREE.Vector3[] = [];
+        for (let i = 0; i < total; i++) {
+            const phi = Math.acos(-1 + (2 * i) / total);
+            const theta = Math.sqrt(total * Math.PI) * phi;
+            const x = RADIUS * Math.sin(phi) * Math.cos(theta);
+            const y = RADIUS * Math.cos(phi);
+            const z = RADIUS * Math.sin(phi) * Math.sin(theta);
+            positions.push(new THREE.Vector3(x, y, z));
+        }
 
-                const { x, y, z } = items[i];
+        // ─── Load Icon Textures & Create Sprites ───────────────
+        const textureLoader = new THREE.TextureLoader();
+        const sprites: THREE.Sprite[] = [];
+        // Create glow sprites (one behind each icon)
+        const glowSprites: THREE.Sprite[] = [];
 
-                // Rotate around Y axis mathematically
-                const rotX = x * Math.cos(t) - z * Math.sin(t);
-                const rotZ = x * Math.sin(t) + z * Math.cos(t);
+        skills.forEach((skill, i) => {
+            const texture = textureLoader.load(skill.icon);
+            texture.colorSpace = THREE.SRGBColorSpace;
 
-                // Actual 3D position
-                const px = rotX * radius;
-                const py = y * radius;
-                const pz = rotZ * radius;
-
-                // Transform the object
-                item.style.transform = `translate3d(${px}px, ${py}px, ${pz}px)`;
-
-                // Normalize Z to alter appearance (back is faded and blurred)
-                const zNorm = (rotZ + 1) / 2; // roughly 0 to 1
-                
-                // If there's an active skill, fade out orbiting items more to draw attention to center
-                if (activeRef.current) {
-                     item.style.opacity = (0.1 + zNorm * 0.2).toFixed(2);
-                     item.style.filter = `blur(${Math.max(2, (1 - zNorm) * 5)}px)`;
-                } else {
-                     item.style.opacity = (0.3 + zNorm * 0.7).toFixed(2);
-                     item.style.filter = `blur(${Math.max(0, (1 - zNorm) * 2.5)}px)`;
-                }
-                
-                item.style.zIndex = Math.round(zNorm * 100).toString();
+            const mat = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                depthTest: true,
+                depthWrite: false,
+                sizeAttenuation: true,
             });
 
-            frameRef.current = requestAnimationFrame(animate);
+            const sprite = new THREE.Sprite(mat);
+            sprite.position.copy(positions[i]);
+            sprite.scale.set(iconSize, iconSize, 1);
+            sprite.userData = { index: i, name: skill.name, color: skill.color };
+
+            // ── Glow sprite behind the icon ──
+            const glowCanvas = document.createElement('canvas');
+            glowCanvas.width = 128;
+            glowCanvas.height = 128;
+            const ctx = glowCanvas.getContext('2d')!;
+            const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+            gradient.addColorStop(0, skill.color + 'cc'); // center with alpha
+            gradient.addColorStop(0.4, skill.color + '66');
+            gradient.addColorStop(1, skill.color + '00'); // fully transparent edge
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 128, 128);
+
+            const glowTexture = new THREE.CanvasTexture(glowCanvas);
+            const glowMat = new THREE.SpriteMaterial({
+                map: glowTexture,
+                transparent: true,
+                depthTest: false,
+                depthWrite: false,
+                sizeAttenuation: true,
+                opacity: 0, // hidden by default
+            });
+            const glowSprite = new THREE.Sprite(glowMat);
+            glowSprite.position.copy(positions[i]);
+            glowSprite.scale.set(0, 0, 1); // hidden
+            glowSprite.renderOrder = -1; // render behind icon
+
+            globeGroup.add(glowSprite);
+            globeGroup.add(sprite);
+            sprites.push(sprite);
+            glowSprites.push(glowSprite);
+        });
+
+        // ─── Raycaster for Hover Detection ─────────────────────
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2(-999, -999); // off-screen initially
+        let currentHoveredIdx = -1;
+
+        // ─── Mouse Drag Rotation ───────────────────────────────
+        let isDragging = false;
+        let prevMouseX = 0;
+        let prevMouseY = 0;
+        let dragVelocityX = 0;
+        let dragVelocityY = 0;
+
+        const onMouseDown = (event: MouseEvent) => {
+            isDragging = true;
+            prevMouseX = event.clientX;
+            prevMouseY = event.clientY;
+            dragVelocityX = 0;
+            dragVelocityY = 0;
+            renderer.domElement.style.cursor = 'grabbing';
         };
 
+        const onMouseUp = () => {
+            isDragging = false;
+            renderer.domElement.style.cursor = currentHoveredIdx >= 0 ? 'pointer' : 'default';
+        };
+
+        const onMouseMove = (event: MouseEvent) => {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            if (isDragging) {
+                const dx = event.clientX - prevMouseX;
+                const dy = event.clientY - prevMouseY;
+                dragVelocityX = dx * 0.005;
+                dragVelocityY = dy * 0.005;
+                globeGroup.rotation.y += dx * 0.005;
+                globeGroup.rotation.x += dy * 0.005;
+                prevMouseX = event.clientX;
+                prevMouseY = event.clientY;
+            }
+        };
+
+        const onMouseLeave = () => {
+            mouse.set(-999, -999);
+            currentHoveredIdx = -1;
+            isDragging = false;
+            setHoveredSkill(null);
+        };
+
+        // ─── Touch Support ─────────────────────────────────────
+        const onTouchStart = (event: TouchEvent) => {
+            if (event.touches.length === 1) {
+                isDragging = true;
+                prevMouseX = event.touches[0].clientX;
+                prevMouseY = event.touches[0].clientY;
+                dragVelocityX = 0;
+                dragVelocityY = 0;
+            }
+        };
+
+        const onTouchMove = (event: TouchEvent) => {
+            if (isDragging && event.touches.length === 1) {
+                const dx = event.touches[0].clientX - prevMouseX;
+                const dy = event.touches[0].clientY - prevMouseY;
+                globeGroup.rotation.y += dx * 0.005;
+                globeGroup.rotation.x += dy * 0.005;
+                prevMouseX = event.touches[0].clientX;
+                prevMouseY = event.touches[0].clientY;
+            }
+        };
+
+        const onTouchEnd = () => {
+            isDragging = false;
+        };
+
+        renderer.domElement.addEventListener('mousedown', onMouseDown);
+        renderer.domElement.addEventListener('mouseup', onMouseUp);
+        window.addEventListener('mouseup', onMouseUp); // catch releases outside canvas
+        renderer.domElement.addEventListener('mousemove', onMouseMove);
+        renderer.domElement.addEventListener('mouseleave', onMouseLeave);
+        renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: true });
+        renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: true });
+        renderer.domElement.addEventListener('touchend', onTouchEnd);
+        renderer.domElement.style.cursor = 'default';
+
+        // ─── Animation Loop ────────────────────────────────────
+        let animId: number;
+        const worldPos = new THREE.Vector3();
+
+        const animate = () => {
+            // Auto-rotate only when not dragging
+            if (!isDragging) {
+                // Apply inertia from drag velocity, then decay
+                if (Math.abs(dragVelocityX) > 0.0001 || Math.abs(dragVelocityY) > 0.0001) {
+                    globeGroup.rotation.y += dragVelocityX;
+                    globeGroup.rotation.x += dragVelocityY;
+                    dragVelocityX *= 0.95; // decay
+                    dragVelocityY *= 0.95;
+                } else {
+                    // Default slow auto-rotation
+                    globeGroup.rotation.y -= 0.0015;
+                }
+            }
+
+            // ── Raycast to detect hovered sprite ──
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(sprites);
+
+            let newHoveredIdx = -1;
+            if (intersects.length > 0) {
+                // Find the front-most intersected sprite (highest z)
+                let bestIntersect: THREE.Intersection | null = null;
+                for (const inter of intersects) {
+                    const sp = inter.object as THREE.Sprite;
+                    sp.getWorldPosition(worldPos);
+                    const zNorm = (worldPos.z + RADIUS) / (2 * RADIUS);
+                    // Only allow hover on front-facing icons
+                    if (zNorm > 0.5) {
+                        if (!bestIntersect) {
+                            bestIntersect = inter;
+                        } else {
+                            const prevSp = bestIntersect.object as THREE.Sprite;
+                            prevSp.getWorldPosition(worldPos);
+                            const prevZ = worldPos.z;
+                            (inter.object as THREE.Sprite).getWorldPosition(worldPos);
+                            if (worldPos.z > prevZ) {
+                                bestIntersect = inter;
+                            }
+                        }
+                    }
+                }
+
+                if (bestIntersect) {
+                    newHoveredIdx = (bestIntersect.object as THREE.Sprite).userData.index;
+                }
+            }
+
+            if (newHoveredIdx !== currentHoveredIdx) {
+                currentHoveredIdx = newHoveredIdx;
+                if (newHoveredIdx >= 0) {
+                    const skill = skills[newHoveredIdx];
+                    // Project hovered sprite to screen coords for label positioning
+                    const hovSprite = sprites[newHoveredIdx];
+                    hovSprite.getWorldPosition(worldPos);
+                    const projected = worldPos.clone().project(camera);
+                    const sx = (projected.x * 0.5 + 0.5) * renderer.domElement.clientWidth;
+                    const sy = (-projected.y * 0.5 + 0.5) * renderer.domElement.clientHeight;
+                    setHoveredSkill({ name: skill.name, color: skill.color, x: sx, y: sy });
+                    renderer.domElement.style.cursor = 'pointer';
+                } else {
+                    setHoveredSkill(null);
+                    renderer.domElement.style.cursor = 'default';
+                }
+            }
+
+            // Also update position every frame if hovered (since globe rotates)
+            if (currentHoveredIdx >= 0) {
+                const hovSprite = sprites[currentHoveredIdx];
+                hovSprite.getWorldPosition(worldPos);
+                const projected = worldPos.clone().project(camera);
+                const sx = (projected.x * 0.5 + 0.5) * renderer.domElement.clientWidth;
+                const sy = (-projected.y * 0.5 + 0.5) * renderer.domElement.clientHeight;
+                const skill = skills[currentHoveredIdx];
+                setHoveredSkill({ name: skill.name, color: skill.color, x: sx, y: sy });
+            }
+
+            // ── Depth-based + hover-based updates ──
+            sprites.forEach((sprite, i) => {
+                sprite.getWorldPosition(worldPos);
+                const z = worldPos.z;
+                const zNorm = (z + RADIUS) / (2 * RADIUS);
+
+                // Base depth behavior
+                const opacity = THREE.MathUtils.clamp(Math.pow(zNorm, 2.5), 0.03, 1);
+                const scaleFactor = 0.6 + zNorm * 0.6;
+                let finalSize = iconSize * scaleFactor;
+
+                const glowSprite = glowSprites[i];
+                const isHovered = i === currentHoveredIdx;
+
+                if (isHovered) {
+                    // ── Pop out effect ──
+                    finalSize = iconSize * 1.4; // 1.4x scale for pop-out
+                    (sprite.material as THREE.SpriteMaterial).opacity = 1;
+
+                    // ── Glow effect ──
+                    const glowSize = finalSize * 2.5;
+                    glowSprite.scale.set(glowSize, glowSize, 1);
+                    (glowSprite.material as THREE.SpriteMaterial).opacity = 0.7;
+                    glowSprite.position.copy(sprite.position);
+                } else {
+                    // Normal depth behavior
+                    (sprite.material as THREE.SpriteMaterial).opacity = opacity;
+
+                    // Hide glow
+                    glowSprite.scale.set(0, 0, 1);
+                    (glowSprite.material as THREE.SpriteMaterial).opacity = 0;
+                }
+
+                sprite.scale.set(finalSize, finalSize, 1);
+            });
+
+            renderer.render(scene, camera);
+            animId = requestAnimationFrame(animate);
+        };
         animate();
-        return () => cancelAnimationFrame(frameRef.current);
+
+        // ─── Resize Handler ────────────────────────────────────
+        const onResize = () => {
+            if (!container) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        };
+        window.addEventListener('resize', onResize);
+
+        // ─── Cleanup ───────────────────────────────────────────
+        return () => {
+            renderer.domElement.removeEventListener('mousedown', onMouseDown);
+            renderer.domElement.removeEventListener('mouseup', onMouseUp);
+            window.removeEventListener('mouseup', onMouseUp);
+            renderer.domElement.removeEventListener('mousemove', onMouseMove);
+            renderer.domElement.removeEventListener('mouseleave', onMouseLeave);
+            renderer.domElement.removeEventListener('touchstart', onTouchStart);
+            renderer.domElement.removeEventListener('touchmove', onTouchMove);
+            renderer.domElement.removeEventListener('touchend', onTouchEnd);
+            window.removeEventListener('resize', onResize);
+            cancelAnimationFrame(animId);
+
+            sprites.forEach(s => {
+                (s.material as THREE.SpriteMaterial).map?.dispose();
+                (s.material as THREE.SpriteMaterial).dispose();
+            });
+            glowSprites.forEach(s => {
+                (s.material as THREE.SpriteMaterial).map?.dispose();
+                (s.material as THREE.SpriteMaterial).dispose();
+            });
+            sphereGeo.dispose();
+            wireMat.dispose();
+            renderer.dispose();
+
+            if (container && renderer.domElement.parentNode === container) {
+                container.removeChild(renderer.domElement);
+            }
+        };
     }, []);
-
-    const handleMouseEnter = (skillName: string) => {
-        setHoveredSkill(skillName);
-        hoverRef.current = true;
-    };
-
-    const handleMouseLeave = () => {
-        setHoveredSkill(null);
-        hoverRef.current = false;
-    };
-    
-    const handleItemClick = (skill: typeof skills[0]) => {
-        // Toggle active skill. If clicking same, turn off.
-        if (activeSkill?.name === skill.name) {
-            setActiveSkill(null);
-            activeRef.current = false;
-        } else {
-            setActiveSkill(skill);
-            activeRef.current = true;
-        }
-    };
-
-    // Close active skill if click outside sphere
-    const handleBackgroundClick = () => {
-        if (activeSkill) {
-            setActiveSkill(null);
-            activeRef.current = false;
-        }
-    };
 
     return (
         <section id="skills" className="py-24 px-4 w-full overflow-hidden relative">
-            <div className="max-w-6xl mx-auto text-center mb-16 relative z-20">
+            {/* Section Title */}
+            <div className="max-w-7xl mx-auto relative z-10 w-full flex justify-center flex-col items-center">
                 <p className="text-white/50 text-sm tracking-[0.2em] uppercase font-bold mb-4 font-mono">
                     Tech Stack
                 </p>
-                <h2 className="text-4xl md:text-5xl font-bold font-heading mb-4 tracking-tight">
-                    My <span className="text-gradient">Skills</span>
+                <h2 className="text-3xl md:text-5xl font-bold font-grotesk tracking-tighter mb-8 inline-flex items-center gap-2">
+                    <span className="text-white">My</span>
+                    <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+                        Skills
+                    </span>
                 </h2>
             </div>
 
-            <div 
-                className="relative w-full h-[500px] md:h-[600px] flex items-center justify-center perspective-[2000px] cursor-pointer"
-                onClick={handleBackgroundClick}
-            >
-                
-                {/* Wireframe Globe Background Base - Accurately matches reference */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] md:w-[480px] md:h-[480px] transform-style-3d pointer-events-none">
-                    {/* Center glowing core */}
-                    <div className={`absolute inset-0 rounded-full bg-blue-500/5 blur-[80px] transition-opacity duration-500 ${activeSkill ? 'opacity-0' : 'opacity-100'}`} />
-                    
-                    {/* Longitude and Latitude rings */}
-                    <div className={`transition-opacity duration-500 ${activeSkill ? 'opacity-20' : 'opacity-100'}`}>
-                        <div className="absolute inset-0 rounded-full border border-indigo-500/20 shadow-[inset_0_0_80px_rgba(79,70,229,0.1)]"></div>
-                        <div className="absolute inset-0 rounded-full border border-blue-500/20" style={{ transform: 'rotateY(45deg)' }}></div>
-                        <div className="absolute inset-0 rounded-full border border-purple-500/20" style={{ transform: 'rotateY(90deg)' }}></div>
-                        <div className="absolute inset-0 rounded-full border border-fuchsia-500/20" style={{ transform: 'rotateY(135deg)' }}></div>
-                        <div className="absolute inset-0 rounded-full border border-indigo-500/20" style={{ transform: 'rotateX(45deg)' }}></div>
-                        <div className="absolute inset-0 rounded-full border border-blue-500/20" style={{ transform: 'rotateX(90deg)' }}></div>
-                        <div className="absolute inset-0 rounded-full border border-purple-500/20" style={{ transform: 'rotateX(135deg)' }}></div>
-                    </div>
-                </div>
-                
-                {/* Active Centered Card Overlay */}
-                <div 
-                    className={`absolute z-[200] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none transition-all duration-500
-                        ${activeSkill ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
-                >
-                    {activeSkill && (
-                        <>
-                            <div className="w-32 h-32 md:w-40 md:h-40 bg-[#161a2b]/80 backdrop-blur-xl border border-white/20 rounded-3xl shadow-[0_0_50px_rgba(139,92,246,0.3)] flex items-center justify-center mb-6 relative overflow-hidden">
-                                {/* Inner glowing ring */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-blue-500/20 opacity-50"></div>
-                                
-                                <div className="w-20 h-20 md:w-24 md:h-24 relative filter drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] z-10 transition-transform hover:scale-110 duration-300">
-                                    <Image
-                                        src={activeSkill.icon}
-                                        alt={activeSkill.name}
-                                        fill
-                                        className={`object-contain
-                                            ${activeSkill.name === 'Next.js' || activeSkill.name === 'Vercel' || activeSkill.name === 'GitHub' ? 'invert' : ''}
-                                        `}
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div className="px-6 py-2 bg-black/40 backdrop-blur-md rounded-lg border border-white/10 text-white font-mono tracking-widest text-sm md:text-base">
-                                {activeSkill.name}
-                            </div>
-                        </>
-                    )}
-                </div>
-                
-                {/* Rotating Sphere Container */}
-                <div className="relative w-full h-full transform-style-3d pointer-events-none">
-                    {skills.map((skill, index) => (
+            {/* 3D Globe Container */}
+            <div className="relative w-full max-w-3xl mx-auto h-[450px] md:h-[550px] z-10">
+                <div ref={mountRef} className="w-full h-full" />
+
+                {/* Hover Label - positioned near the hovered icon */}
+                {hoveredSkill && (
+                    <div
+                        className="absolute pointer-events-none transition-opacity duration-200 z-[200]"
+                        style={{
+                            left: `${hoveredSkill.x}px`,
+                            top: `${hoveredSkill.y + 30}px`,
+                            transform: 'translateX(-50%)',
+                        }}
+                    >
                         <div
-                            key={skill.name}
-                            ref={(el) => {
-                                if (el) itemsRef.current[index] = el;
-                            }}
-                            className="absolute left-1/2 top-1/2 -mt-6 -ml-6 md:-mt-8 md:-ml-8 transition-transform duration-0 pointer-events-auto group"
-                            onMouseEnter={() => handleMouseEnter(skill.name)}
-                            onMouseLeave={handleMouseLeave}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleItemClick(skill);
+                            className="px-4 py-1.5 bg-black/70 backdrop-blur-md rounded-full border font-mono tracking-[0.15em] text-xs whitespace-nowrap shadow-lg"
+                            style={{
+                                borderColor: hoveredSkill.color + '44',
+                                color: hoveredSkill.color,
+                                boxShadow: `0 0 20px ${hoveredSkill.color}33`,
                             }}
                         >
-                            <div 
-                                className={`relative flex items-center justify-center p-3 md:p-4 rounded-xl transition-all duration-300 cursor-pointer
-                                  ${hoveredSkill === skill.name && activeSkill?.name !== skill.name ? 'bg-white/10 scale-125 border border-white/20 shadow-[0_0_30px_rgba(139,92,246,0.3)]' : 'bg-transparent border border-transparent scale-100'}
-                                  ${activeSkill?.name === skill.name ? 'opacity-0 scale-0 pointer-events-none' : 'opacity-100'}
-                                `}
-                            >
-                                <div className="w-10 h-10 md:w-16 md:h-16 relative filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
-                                    <Image
-                                        src={skill.icon}
-                                        alt={skill.name}
-                                        fill
-                                        className={`object-contain transition-all duration-500
-                                          ${skill.name === 'Next.js' || skill.name === 'Vercel' || skill.name === 'GitHub' ? 'invert' : ''}
-                                        `}
-                                    />
-                                </div>
-                                
-                                {/* Tooltip (hidden when active card is shown) */}
-                                <div 
-                                    className={`absolute -bottom-10 left-1/2 -translate-x-1/2 w-max px-3 py-1 bg-[#0b0f1a]/90 backdrop-blur-md rounded border border-white/10 text-xs font-mono text-white transition-all duration-300 pointer-events-none shadow-lg
-                                    ${hoveredSkill === skill.name && !activeSkill ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
-                                >
-                                    {skill.name}
-                                </div>
-                            </div>
+                            {hoveredSkill.name.toUpperCase()}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                )}
             </div>
-            
-            <style dangerouslySetInnerHTML={{__html: `
-                .transform-style-3d {
-                    transform-style: preserve-3d;
-                }
-            `}} />
         </section>
     );
 }
