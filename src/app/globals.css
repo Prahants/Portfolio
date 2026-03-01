@@ -40,6 +40,20 @@
   }
 }
 
+@keyframes sweep-line {
+  0% {
+    left: -2px;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+.animate-sweep-line {
+  animation: sweep-line 4.5s linear infinite;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
