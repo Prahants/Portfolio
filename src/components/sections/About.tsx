@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, type Variants } from "framer-motion";
 import { Activity, MapPin } from "lucide-react";
 import Image from "next/image";
 
@@ -34,6 +35,132 @@ const TECH_STACK = [
     { name: "VS Code", src: "/logos/vscode-original.svg" },
 ];
 
+const CARDS_DATA = [
+    {
+        title: "University",
+        description:
+            "B.Tech in Computer Science & Engineering. Focused on AI, full-stack systems, and scalable architectures. Strong foundation in data structures and algorithms.",
+        accentColor: "#8b5cf6",
+        glowColor: "rgba(139, 92, 246, 0.35)",
+        hoverTextClass: "text-purple-400",
+        underlineClass: "bg-purple-500/50",
+    },
+    {
+        title: "Competitions",
+        description:
+            "Active hackathon participant with a competitive mindset. 3rd place winner at Cassini Hackathon. Passionate about solving real-world problems under constraints.",
+        accentColor: "#6366f1",
+        glowColor: "rgba(99, 102, 241, 0.35)",
+        hoverTextClass: "text-indigo-400",
+        underlineClass: "bg-indigo-500/50",
+    },
+    {
+        title: "Learning",
+        description:
+            "Consistently contributing on GitHub and refining code quality. Focused on writing clean, scalable, production-ready code. Committed to continuous improvement.",
+        accentColor: "#10b981",
+        glowColor: "rgba(16, 185, 129, 0.35)",
+        hoverTextClass: "text-emerald-400",
+        underlineClass: "bg-emerald-500/50",
+    },
+];
+
+function InfoCards({ itemVariants }: { itemVariants: Variants }) {
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+    return (
+        <motion.div
+            variants={itemVariants}
+            className="glass md:col-span-2 flex flex-col relative overflow-hidden"
+            style={{ minHeight: "160px" }}
+        >
+            {/* "Hover to Read More" hint */}
+            <p className="text-[7px] md:text-[8px] uppercase tracking-[0.2em] text-white/30 font-mono pt-3 pb-1 text-center relative z-30">
+                Hover to Read More
+            </p>
+
+            {/* Desktop: cards peeking from bottom, reveal on hover */}
+            <div
+                className="relative flex-grow hidden md:block"
+                style={{ perspective: "1200px" }}
+                onMouseLeave={() => setHoveredIndex(null)}
+            >
+                {CARDS_DATA.map((card, index) => {
+                    const isActive = hoveredIndex === index;
+                    const isOther = hoveredIndex !== null && hoveredIndex !== index;
+
+                    return (
+                        <motion.div
+                            key={card.title}
+                            className="absolute border rounded-xl backdrop-blur-md cursor-pointer flex flex-col justify-start p-4 md:p-5"
+                            style={{
+                                width: "36%",
+                                height: "165px",
+                                top: "45%",
+                                left: index === 0 ? "1%" : index === 1 ? "33%" : "64%",
+                                transformStyle: "preserve-3d",
+                                backgroundColor: isActive
+                                    ? "rgba(255,255,255,0.08)"
+                                    : "rgba(255,255,255,0.03)",
+                                borderColor: isActive
+                                    ? `${card.accentColor}88`
+                                    : "rgba(255,255,255,0.08)",
+                                boxShadow: isActive
+                                    ? `0 -8px 40px ${card.glowColor}, inset 0 1px 0 rgba(255,255,255,0.1)`
+                                    : "0 2px 12px rgba(0,0,0,0.3)",
+                            }}
+                            onMouseEnter={() => setHoveredIndex(index)}
+                            animate={{
+                                y: isActive ? -55 : isOther ? 8 : 0,
+                                scale: isActive ? 1.02 : isOther ? 0.96 : 1,
+                                opacity: isActive ? 1 : isOther ? 0.4 : 0.7,
+                                zIndex: isActive ? 30 : isOther ? 5 : 10,
+                            }}
+                            transition={{
+                                duration: 0.35,
+                                ease: [0.25, 0.46, 0.45, 0.94],
+                            }}
+                            initial={{ y: 0 }}
+                        >
+                            <h3
+                                className={`text-xs md:text-sm font-bold mb-2 uppercase tracking-wider relative w-fit transition-colors duration-300 ${isActive ? card.hoverTextClass : "text-white"
+                                    }`}
+                            >
+                                {card.title}
+                                <span
+                                    className={`absolute -bottom-1 left-0 h-[1.5px] rounded-full transition-all duration-300 ${card.underlineClass} ${isActive ? "w-full" : "w-1/2"
+                                        }`}
+                                ></span>
+                            </h3>
+                            <p className={`text-[10px] md:text-[11px] leading-relaxed mt-1 transition-colors duration-300 ${isActive ? "text-white/70" : "text-white/40"
+                                }`}>
+                                {card.description}
+                            </p>
+                        </motion.div>
+                    );
+                })}
+            </div>
+
+            {/* Mobile: simple vertical stack */}
+            <div className="flex flex-col gap-2 p-2 md:hidden">
+                {CARDS_DATA.map((card) => (
+                    <div
+                        key={card.title}
+                        className="p-3 border border-white/10 rounded-xl backdrop-blur-sm bg-white/5"
+                    >
+                        <h3 className={`text-xs font-bold mb-1 uppercase tracking-wider ${card.hoverTextClass}`}>
+                            {card.title}
+                        </h3>
+                        <p className="text-[11px] text-white/60 leading-relaxed">
+                            {card.description}
+                        </p>
+                    </div>
+                ))}
+            </div>
+        </motion.div>
+    );
+}
+
 export default function About() {
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -49,7 +176,7 @@ export default function About() {
     };
 
     return (
-        <section id="about" className="py-8 md:py-10 px-4 max-w-[1100px] mx-auto min-h-screen flex items-center">
+        <section id="about" className="py-8 md:py-10 px-4 max-w-[1050px] mx-auto min-h-screen flex items-center">
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -58,47 +185,20 @@ export default function About() {
                 className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 w-full"
             >
                 {/* Top Row: Name Plate */}
-                <motion.div variants={itemVariants} className="glass p-3 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="glass p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="relative z-10 w-full flex flex-col items-center justify-center py-1">
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-white tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] leading-none">PRASHANT</h2>
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-heading text-white tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] mb-2 mt-1 leading-none">KUMAR</h2>
-                        <div className="w-12 h-[1px] bg-white/20 mx-auto mb-2"></div>
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-heading text-white tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] leading-none">PRASHANT</h2>
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-heading text-white tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] mb-1 mt-0.5 leading-none">KUMAR</h2>
+                        <div className="w-12 h-[1px] bg-white/20 mx-auto mb-1.5"></div>
                         <p className="text-[9px] md:text-[10px] tracking-[0.2em] font-mono text-white/50 uppercase leading-relaxed">
                             FullStack Developer <br /> & AIML Engineer
                         </p>
                     </div>
                 </motion.div>
 
-                {/* Top Row: Hover to Read More */}
-                <motion.div variants={itemVariants} className="glass p-2 md:col-span-2 flex flex-col relative overflow-hidden group">
-
-
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-grow h-full items-stretch">
-                        {/* University */}
-                        <div className="p-4 md:p-5 border border-white/5 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-purple-500/40 hover:-translate-y-3 hover:scale-[1.02] hover:z-10 hover:shadow-[0_8px_30px_rgba(139,92,246,0.3)] transition-all duration-300 ease-out group/card flex flex-col justify-center cursor-pointer">
-                            <h3 className="text-xs md:text-sm font-bold text-white mb-2 uppercase tracking-wider relative w-fit group-hover/card:text-purple-400 transition-colors">
-                                University
-                                <span className="absolute -bottom-1 left-0 w-1/2 h-[1px] bg-purple-500/50 rounded-full"></span>
-                            </h3>
-                            <p className="text-xs text-white/60 leading-relaxed mt-1 text-balance lg:text-pretty">
-                                Pursuing Computer Science & Engineering. Focused on advanced software development and AI.
-                            </p>
-                        </div>
-
-                        {/* Competitions */}
-                        <div className="p-4 md:p-5 border border-white/5 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-blue-500/40 hover:-translate-y-3 hover:scale-[1.02] hover:z-10 hover:shadow-[0_8px_30px_rgba(59,130,246,0.3)] transition-all duration-300 ease-out group/card flex flex-col justify-center cursor-pointer">
-                            <h3 className="text-xs md:text-sm font-bold text-white mb-2 uppercase tracking-wider relative w-fit group-hover/card:text-blue-400 transition-colors">
-                                Competitions
-                                <span className="absolute -bottom-1 left-0 w-1/2 h-[1px] bg-blue-500/50 rounded-full"></span>
-                            </h3>
-                            <p className="text-xs text-white/60 leading-relaxed mt-1 text-balance lg:text-pretty">
-                                3rd Place Winner at the Cassini Hackathon and Econverse Startup Finalist.
-                            </p>
-                        </div>
-                    </div>
-                </motion.div>
+                {/* Top Row: 3 Interactive Info Cards */}
+                <InfoCards itemVariants={itemVariants} />
 
                 {/* Left Column: Mindset */}
                 <motion.div variants={itemVariants} className="glass p-6 md:p-7 flex flex-col justify-between group">
