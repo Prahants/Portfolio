@@ -71,11 +71,14 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
     return (
         <motion.div
             variants={itemVariants}
-            className="glass md:col-span-2 flex flex-col relative overflow-hidden"
-            style={{ minHeight: "160px" }}
+            className="glass md:col-span-2 flex flex-col relative"
+            style={{
+                minHeight: "160px",
+                clipPath: "inset(0 round 0.75rem)",
+            }}
         >
             {/* "Hover to Read More" hint */}
-            <p className="text-[7px] md:text-[8px] uppercase tracking-[0.2em] text-white/30 font-mono pt-3 pb-1 text-center relative z-30">
+            <p className={`text-[7px] md:text-[8px] uppercase tracking-[0.2em] text-white/30 font-mono pt-3 pb-1 text-center relative z-30 transition-opacity duration-300 ${hoveredIndex !== null ? "opacity-0" : "opacity-100"}`}>
                 Hover to Read More
             </p>
 
@@ -85,20 +88,24 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
                 style={{ perspective: "1200px" }}
                 onMouseLeave={() => setHoveredIndex(null)}
             >
-                {CARDS_DATA.map((card, index) => {
+                {[0, 2, 1].map((index) => {
+                    const card = CARDS_DATA[index];
+                    const isCenter = index === 1;
                     const isActive = hoveredIndex === index;
                     const isOther = hoveredIndex !== null && hoveredIndex !== index;
+
+                    // Center always in front (30), side cards max 20 when hovered
+                    const currentZ = isCenter ? 30 : (isActive ? 20 : 10);
 
                     return (
                         <motion.div
                             key={card.title}
-                            className="absolute border rounded-xl backdrop-blur-md cursor-pointer flex flex-col justify-start p-4 md:p-5"
+                            className="absolute border rounded-xl backdrop-blur-md cursor-pointer flex flex-col justify-start p-3"
                             style={{
                                 width: "36%",
-                                height: "165px",
-                                top: "45%",
+                                top: isCenter ? "25%" : "50%",
                                 left: index === 0 ? "1%" : index === 1 ? "33%" : "64%",
-                                transformStyle: "preserve-3d",
+                                zIndex: currentZ,
                                 backgroundColor: isActive
                                     ? "rgba(255,255,255,0.08)"
                                     : "rgba(255,255,255,0.03)",
@@ -111,10 +118,9 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
                             }}
                             onMouseEnter={() => setHoveredIndex(index)}
                             animate={{
-                                y: isActive ? -55 : isOther ? 8 : 0,
-                                scale: isActive ? 1.02 : isOther ? 0.96 : 1,
-                                opacity: isActive ? 1 : isOther ? 0.4 : 0.7,
-                                zIndex: isActive ? 30 : isOther ? 5 : 10,
+                                y: isActive ? -45 : isOther ? (isCenter ? 0 : 8) : 0,
+                                scale: isActive ? 1.02 : isOther ? (isCenter ? 1 : 0.96) : 1,
+                                opacity: isActive ? 1 : isOther ? (isCenter ? 0.85 : 0.4) : (isCenter ? 0.85 : 0.7),
                             }}
                             transition={{
                                 duration: 0.35,
@@ -123,17 +129,17 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
                             initial={{ y: 0 }}
                         >
                             <h3
-                                className={`text-xs md:text-sm font-bold mb-2 uppercase tracking-wider relative w-fit transition-colors duration-300 ${isActive ? card.hoverTextClass : "text-white"
-                                    }`}
+                                className={`text-[10px] md:text-xs font-bold mb-1 uppercase tracking-wider relative w-fit transition-colors duration-300 ${isActive ? card.hoverTextClass : "text-white"
+                                    } ${isCenter ? "self-center" : index === 2 ? "self-end" : "self-start"}`}
                             >
                                 {card.title}
                                 <span
-                                    className={`absolute -bottom-1 left-0 h-[1.5px] rounded-full transition-all duration-300 ${card.underlineClass} ${isActive ? "w-full" : "w-1/2"
+                                    className={`absolute -bottom-0.5 left-0 h-[1.5px] rounded-full transition-all duration-300 ${card.underlineClass} ${isActive ? "w-full" : "w-1/2"
                                         }`}
                                 ></span>
                             </h3>
-                            <p className={`text-[10px] md:text-[11px] leading-relaxed mt-1 transition-colors duration-300 ${isActive ? "text-white/70" : "text-white/40"
-                                }`}>
+                            <p className={`text-[9px] md:text-[10px] leading-snug mt-1 transition-colors duration-300 ${isActive ? "text-white/70" : "text-white/40"
+                                } ${isCenter ? "text-center" : index === 2 ? "text-right" : "text-left"}`}>
                                 {card.description}
                             </p>
                         </motion.div>
