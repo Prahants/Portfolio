@@ -48,7 +48,7 @@ const CARDS_DATA = [
     {
         title: "Competitions",
         description:
-            "Active hackathon participant with a competitive mindset. 3rd place winner at Cassini Hackathon. Passionate about solving real-world problems under constraints.",
+            "Recognized as a Global Nominee – NASA Space Apps Challenge (Zurich, CH). Secured 2nd Prize at Project Expo (Arduino Day, Jain University) for innovation and technical excellence. Driven by high-impact problem solving and competitive innovation.",
         accentColor: "#6366f1",
         glowColor: "rgba(99, 102, 241, 0.35)",
         hoverTextClass: "text-indigo-400",
@@ -78,7 +78,7 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
             }}
         >
             {/* "Hover to Read More" hint */}
-            <p className={`text-[7px] md:text-[8px] uppercase tracking-[0.2em] text-white/30 font-mono pt-3 pb-1 text-center relative z-30 transition-opacity duration-300 ${hoveredIndex !== null ? "opacity-0" : "opacity-100"}`}>
+            <p className={`text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-white/30 font-mono pt-3 pb-1 text-center relative z-30 transition-opacity duration-300 ${hoveredIndex !== null ? "opacity-0" : "opacity-100"}`}>
                 Hover to Read More
             </p>
 
@@ -100,11 +100,11 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
                     return (
                         <motion.div
                             key={card.title}
-                            className="absolute border rounded-xl backdrop-blur-md cursor-pointer flex flex-col justify-start p-3"
+                            className={`absolute border rounded-xl backdrop-blur-md cursor-pointer flex flex-col justify-start ${isCenter ? "p-2.5 pb-14" : "p-3"}`}
                             style={{
-                                width: "36%",
+                                width: isCenter ? "38%" : "30%",
                                 top: isCenter ? "25%" : "50%",
-                                left: index === 0 ? "1%" : index === 1 ? "33%" : "64%",
+                                left: index === 0 ? "1%" : index === 1 ? "31%" : "69%",
                                 zIndex: currentZ,
                                 backgroundColor: isActive
                                     ? "rgba(255,255,255,0.08)"
@@ -138,7 +138,7 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
                                         }`}
                                 ></span>
                             </h3>
-                            <p className={`text-[9px] md:text-[10px] leading-snug mt-1 transition-colors duration-300 ${isActive ? "text-white/70" : "text-white/40"
+                            <p className={`text-[10px] md:text-[10px] leading-snug mt-1 transition-colors duration-300 ${isActive ? "text-white/70" : "text-white/40"
                                 } ${isCenter ? "text-center" : index === 2 ? "text-right" : "text-left"}`}>
                                 {card.description}
                             </p>
@@ -277,8 +277,8 @@ export default function About() {
                     <div className="glass p-1.5 h-full relative overflow-hidden group flex-grow min-h-[180px]">
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0b0f1a]/20 to-[#0b0f1a]/80 z-10 rounded-[10px] pointer-events-none"></div>
                         <Image
-                            src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400"
-                            alt="Professional Portrait"
+                            src="/Prashant.png"
+                            alt="Prashant Kumar"
                             fill
                             className="object-cover rounded-[10px]"
                         />
