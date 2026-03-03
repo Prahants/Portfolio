@@ -118,9 +118,9 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
                             }}
                             onMouseEnter={() => setHoveredIndex(index)}
                             animate={{
-                                y: isActive ? -45 : isOther ? (isCenter ? 0 : 8) : 0,
-                                scale: isActive ? 1.02 : isOther ? (isCenter ? 1 : 0.96) : 1,
-                                opacity: isActive ? 1 : isOther ? (isCenter ? 0.85 : 0.4) : (isCenter ? 0.85 : 0.7),
+                                y: isActive ? -45 : 0,
+                                scale: isActive ? 1.02 : 1,
+                                opacity: isActive ? 1 : (isCenter ? 0.85 : 0.7),
                             }}
                             transition={{
                                 duration: 0.35,
