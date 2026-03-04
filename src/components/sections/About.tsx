@@ -79,7 +79,8 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
         >
             {/* "Hover to Read More" hint */}
             <p className={`text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-white/30 font-mono pt-3 pb-1 text-center relative z-30 transition-opacity duration-300 ${hoveredIndex !== null ? "opacity-0" : "opacity-100"}`}>
-                Hover to Read More
+                <span className="md:hidden">Tap to Read More</span>
+                <span className="hidden md:inline">Hover to Read More</span>
             </p>
 
             {/* Desktop: cards peeking from bottom, reveal on hover */}
@@ -147,21 +148,73 @@ function InfoCards({ itemVariants }: { itemVariants: Variants }) {
                 })}
             </div>
 
-            {/* Mobile: simple vertical stack */}
-            <div className="flex flex-col gap-2 p-2 md:hidden">
-                {CARDS_DATA.map((card) => (
-                    <div
-                        key={card.title}
-                        className="p-3 border border-white/10 rounded-xl backdrop-blur-sm bg-white/5"
-                    >
-                        <h3 className={`text-xs font-bold mb-1 uppercase tracking-wider ${card.hoverTextClass}`}>
-                            {card.title}
-                        </h3>
-                        <p className="text-[11px] text-white/60 leading-relaxed">
-                            {card.description}
-                        </p>
-                    </div>
-                ))}
+            {/* Mobile: staggered cards matching desktop layout, tap to expand */}
+            <div
+                className="relative flex-grow md:hidden"
+                style={{ minHeight: "140px" }}
+                onClick={(e) => {
+                    // If tapping outside cards, reset
+                    if (e.target === e.currentTarget) setHoveredIndex(null);
+                }}
+            >
+                {[0, 2, 1].map((index) => {
+                    const card = CARDS_DATA[index];
+                    const isCenter = index === 1;
+                    const isActive = hoveredIndex === index;
+
+                    const currentZ = isCenter ? 30 : (isActive ? 20 : 10);
+
+                    return (
+                        <motion.div
+                            key={card.title}
+                            className={`absolute border rounded-xl backdrop-blur-md cursor-pointer flex flex-col justify-start ${isCenter ? "p-2.5 pb-10" : "p-2.5"}`}
+                            style={{
+                                width: isCenter ? "40%" : "32%",
+                                top: isCenter ? "15%" : "40%",
+                                left: index === 0 ? "0%" : index === 1 ? "30%" : "68%",
+                                zIndex: currentZ,
+                                backgroundColor: isActive
+                                    ? "rgba(255,255,255,0.08)"
+                                    : "rgba(255,255,255,0.03)",
+                                borderColor: isActive
+                                    ? `${card.accentColor}88`
+                                    : "rgba(255,255,255,0.08)",
+                                boxShadow: isActive
+                                    ? `0 -8px 40px ${card.glowColor}, inset 0 1px 0 rgba(255,255,255,0.1)`
+                                    : "0 2px 12px rgba(0,0,0,0.3)",
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setHoveredIndex(isActive ? null : index);
+                            }}
+                            animate={{
+                                y: isActive ? -35 : 0,
+                                scale: isActive ? 1.02 : 1,
+                                opacity: isActive ? 1 : (isCenter ? 0.85 : 0.7),
+                            }}
+                            transition={{
+                                duration: 0.35,
+                                ease: [0.25, 0.46, 0.45, 0.94],
+                            }}
+                            initial={{ y: 0 }}
+                        >
+                            <h3
+                                className={`text-[9px] font-bold mb-0.5 uppercase tracking-wider relative w-fit transition-colors duration-300 ${isActive ? card.hoverTextClass : "text-white"
+                                    } ${isCenter ? "self-center" : index === 2 ? "self-end" : "self-start"}`}
+                            >
+                                {card.title}
+                                <span
+                                    className={`absolute -bottom-0.5 left-0 h-[1px] rounded-full transition-all duration-300 ${card.underlineClass} ${isActive ? "w-full" : "w-1/2"
+                                        }`}
+                                ></span>
+                            </h3>
+                            <p className={`text-[8px] leading-snug mt-0.5 transition-colors duration-300 ${isActive ? "text-white/70" : "text-white/40"
+                                } ${isCenter ? "text-center" : index === 2 ? "text-right" : "text-left"}`}>
+                                {card.description}
+                            </p>
+                        </motion.div>
+                    );
+                })}
             </div>
         </motion.div>
     );
@@ -188,10 +241,10 @@ export default function About() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 w-full"
+                className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 w-full"
             >
                 {/* Top Row: Name Plate */}
-                <motion.div variants={itemVariants} className="glass p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                <motion.div variants={itemVariants} className="glass p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group order-1 md:order-none">
                     <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     <div className="relative z-10 w-full flex flex-col items-center justify-center py-1">
                         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold font-heading text-white tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] leading-none">PRASHANT</h2>
@@ -204,10 +257,12 @@ export default function About() {
                 </motion.div>
 
                 {/* Top Row: 3 Interactive Info Cards */}
-                <InfoCards itemVariants={itemVariants} />
+                <div className="col-span-2 md:col-span-2 order-3 md:order-none">
+                    <InfoCards itemVariants={itemVariants} />
+                </div>
 
                 {/* Left Column: Mindset */}
-                <motion.div variants={itemVariants} className="glass p-6 md:p-7 flex flex-col justify-between group">
+                <motion.div variants={itemVariants} className="glass p-5 md:p-7 flex flex-col justify-between group col-span-1 order-4 md:order-none">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-bold mb-2 font-heading">Mindset</h2>
                         <div className="w-10 h-[2px] bg-purple-500 mb-4"></div>
@@ -273,8 +328,8 @@ export default function About() {
                 </motion.div>
 
                 {/* Center Column: Portrait and Location */}
-                <motion.div variants={itemVariants} className="flex flex-col gap-3 h-full min-h-[300px]">
-                    <div className="glass p-1.5 h-full relative overflow-hidden group flex-grow min-h-[180px]">
+                <motion.div variants={itemVariants} className="flex flex-col gap-3 h-full min-h-[280px] md:min-h-[300px] order-2 md:order-none">
+                    <div className="glass p-1.5 h-full relative overflow-hidden group flex-grow min-h-[260px]">
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0b0f1a]/20 to-[#0b0f1a]/80 z-10 rounded-[10px] pointer-events-none"></div>
                         <Image
                             src="/Prashant.png"
@@ -314,7 +369,7 @@ export default function About() {
                 </motion.div>
 
                 {/* Right Column: Craft */}
-                <motion.div variants={itemVariants} className="glass p-6 md:p-7 flex flex-col h-full group overflow-hidden">
+                <motion.div variants={itemVariants} className="glass p-6 md:p-7 flex flex-col h-full group overflow-hidden col-span-1 order-5 md:order-none">
                     <h2 className="text-2xl md:text-3xl font-bold mb-2 font-heading">Craft</h2>
                     <div className="w-10 h-[2px] bg-purple-500 mb-4"></div>
                     <p className="text-sm text-white/70 mb-4 leading-relaxed">
