@@ -9,7 +9,7 @@ import Background from "@/components/ui/Background";
 
 export default function Home() {
   return (
-    <main className="relative bg-[#0b0f1a] text-white overflow-hidden min-h-screen">
+    <main className="relative text-white overflow-hidden min-h-screen">
       <Background />
       <Navbar />
 

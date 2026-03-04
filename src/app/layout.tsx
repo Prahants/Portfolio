@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import DotGrid from "@/components/ui/DotGrid";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -32,8 +33,8 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased bg-[#0b0f1a] text-white min-h-screen relative`}
       >
-        <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
-        <div className="relative z-10 flex flex-col min-h-screen">
+        <DotGrid />
+        <div className="relative z-[2] flex flex-col min-h-screen">
           {children}
         </div>
       </body>
