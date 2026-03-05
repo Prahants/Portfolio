@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased bg-[#0b0f1a] text-white min-h-screen relative`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased bg-[#0c0a1a] text-white min-h-screen relative`}
       >
         <DotGrid />
         <div className="relative z-[2] flex flex-col min-h-screen">

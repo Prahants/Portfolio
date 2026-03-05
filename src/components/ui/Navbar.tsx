@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Calendar, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,7 @@ export default function Navbar() {
     const [activeTab, setActiveTab] = useState("Home");
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const isManualScroll = useRef(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -24,6 +25,34 @@ export default function Navbar() {
         };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    // Scroll spy: auto-detect active section
+    useEffect(() => {
+        const sectionIds = navItems.map((item) => item.href.replace("#", ""));
+        const sections = sectionIds
+            .map((id) => document.getElementById(id))
+            .filter(Boolean) as HTMLElement[];
+
+        if (sections.length === 0) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (isManualScroll.current) return;
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const name = navItems.find(
+                            (item) => item.href === `#${entry.target.id}`
+                        )?.name;
+                        if (name) setActiveTab(name);
+                    }
+                });
+            },
+            { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
+        );
+
+        sections.forEach((section) => observer.observe(section));
+        return () => observer.disconnect();
     }, []);
 
     // Lock body scroll when mobile menu is open
@@ -37,12 +66,16 @@ export default function Navbar() {
     }, [mobileMenuOpen]);
 
     const scrollTo = (href: string, name: string) => {
+        isManualScroll.current = true;
         setActiveTab(name);
         setMobileMenuOpen(false);
         const element = document.querySelector(href);
         if (element) {
             element.scrollIntoView({ behavior: "smooth" });
         }
+        setTimeout(() => {
+            isManualScroll.current = false;
+        }, 1000);
     };
 
     return (
@@ -61,7 +94,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Center: Navigation Links - Desktop only */}
-                <div className="hidden md:flex items-center gap-1 p-1.5 rounded-full border border-white/10 bg-[#0b0f1a]/60 backdrop-blur-lg">
+                <div className="hidden md:flex items-center gap-1 p-1.5 rounded-full border border-white/10 bg-[#0c0a1a]/60 backdrop-blur-lg">
                     {navItems.map((item) => (
                         <button
                             key={item.name}
@@ -126,7 +159,7 @@ export default function Navbar() {
                         className="fixed inset-0 z-40 md:hidden"
                     >
                         {/* Backdrop */}
-                        <div className="absolute inset-0 bg-[#0b0f1a]/95 backdrop-blur-xl" />
+                        <div className="absolute inset-0 bg-[#0c0a1a]/95 backdrop-blur-xl" />
 
                         {/* Menu Content */}
                         <div className="relative z-10 flex flex-col items-center justify-center h-full gap-2 px-6">

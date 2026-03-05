@@ -287,6 +287,7 @@ export default function About() {
                             </defs>
                         </svg>
 
+
                         <div className="relative p-4 z-10">
                             <div className="flex justify-between items-start mb-3">
                                 <div>
@@ -330,7 +331,7 @@ export default function About() {
                 {/* Center Column: Portrait and Location */}
                 <motion.div variants={itemVariants} className="flex flex-col gap-3 h-full min-h-[280px] md:min-h-[300px] order-2 md:order-none">
                     <div className="glass p-1.5 h-full relative overflow-hidden group flex-grow min-h-[260px]">
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0b0f1a]/20 to-[#0b0f1a]/80 z-10 rounded-[10px] pointer-events-none"></div>
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0f]/20 to-[#0a0a0f]/80 z-10 rounded-[10px] pointer-events-none"></div>
                         <Image
                             src="/Prashant.png"
                             alt="Prashant Kumar"
@@ -341,7 +342,7 @@ export default function About() {
 
                     <div className="glass p-4 relative overflow-hidden h-[130px] shrink-0">
                         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&q=80&w=600')] bg-cover bg-center opacity-15"></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f1a] via-[#0b0f1a]/70 to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/70 to-transparent"></div>
 
                         {/* Animated sweep line - moves left to right */}
                         <div className="absolute top-0 bottom-0 w-[1.5px] bg-gradient-to-b from-transparent via-purple-400/60 to-transparent z-20 animate-sweep-line shadow-[0_0_8px_rgba(167,139,250,0.5)]"></div>
@@ -403,7 +404,7 @@ export default function About() {
                     <div className="pt-3 border-t border-white/10">
                         <div className="flex flex-col gap-1.5">
                             <p className="text-xs text-white/70 leading-relaxed max-w-[95%]">Active Open Source contributor. Look forward to solving complex bugs.</p>
-                            <div className="flex items-center gap-1.5 mt-1 bg-[#0b0f1a]/50 p-2 rounded-lg border border-white/5 w-fit">
+                            <div className="flex items-center gap-1.5 mt-1 bg-[#0a0a0f]/50 p-2 rounded-lg border border-white/5 w-fit">
                                 <span className="relative flex h-1.5 w-1.5">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
