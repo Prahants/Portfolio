@@ -384,12 +384,12 @@ export default function Skills() {
         <section id="skills" className="py-24 px-4 w-full overflow-hidden relative">
             {/* Section Title */}
             <div className="max-w-7xl mx-auto relative z-10 w-full flex justify-center flex-col items-center">
-                <p className="text-white/50 text-sm tracking-[0.2em] uppercase font-bold mb-4 font-mono">
+                <p className="text-white/85 text-base md:text-lg tracking-[0.2em] uppercase font-bold mb-4 font-mono">
                     Tech Stack
                 </p>
-                <h2 className="text-3xl md:text-5xl font-bold font-grotesk tracking-tighter mb-8 inline-flex items-center gap-2">
+                <h2 className="text-5xl md:text-7xl font-bold font-grotesk tracking-tighter mb-8 inline-flex items-center gap-2">
                     <span className="text-white">My</span>
-                    <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent pb-1 pr-2">
                         Skills
                     </span>
                 </h2>
