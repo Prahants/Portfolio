@@ -20,15 +20,15 @@ export default function Footer() {
 
                 {/* Right */}
                 <div className="flex items-center gap-6">
-                    <Link href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors hover:scale-110 transform duration-300">
+                    <Link href="https://github.com/prahants" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-white transition-colors hover:scale-110 transform duration-300">
                         <Github size={20} />
                         <span className="sr-only">GitHub</span>
                     </Link>
-                    <Link href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-[#0a66c2] transition-colors hover:scale-110 transform duration-300">
+                    <Link href="https://www.linkedin.com/in/prahants/" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-[#0a66c2] transition-colors hover:scale-110 transform duration-300">
                         <Linkedin size={20} />
                         <span className="sr-only">LinkedIn</span>
                     </Link>
-                    <Link href="mailto:contact@example.com" className="text-white/50 hover:text-red-400 transition-colors hover:scale-110 transform duration-300">
+                    <Link href="https://mail.google.com/mail/?view=cm&fs=1&to=works.prashantsingh@gmail.com" target="_blank" rel="noopener noreferrer" className="text-white/50 hover:text-red-400 transition-colors hover:scale-110 transform duration-300">
                         <Mail size={20} />
                         <span className="sr-only">Email</span>
                     </Link>
