@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Calendar, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import BookCallModal from "./BookCallModal";
 
 const navItems = [
     { name: "Home", href: "#home" },
@@ -14,10 +15,16 @@ const navItems = [
 ];
 
 export default function Navbar() {
+    const [mounted, setMounted] = useState(false);
     const [activeTab, setActiveTab] = useState("Home");
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const isManualScroll = useRef(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -88,7 +95,9 @@ export default function Navbar() {
             >
                 {/* Left side: Dark Mode Toggle */}
                 <div className="flex-1 flex justify-start">
-                    <button className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] border border-white/10 backdrop-blur-md bg-white/5 transition-all outline-none cursor-pointer">
+                    <button 
+                        className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] border border-white/10 backdrop-blur-md bg-white/5 transition-all outline-none cursor-pointer"
+                    >
                         <Moon size={20} className="text-white/80" />
                     </button>
                 </div>
@@ -121,7 +130,6 @@ export default function Navbar() {
                     ))}
                 </div>
 
-                {/* Center: Hamburger Menu Toggle - Mobile only */}
                 <div className="md:hidden flex items-center">
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -137,12 +145,18 @@ export default function Navbar() {
 
                 {/* Right side: Book a Call - Desktop only */}
                 <div className="flex-1 flex justify-end">
-                    <button className="hidden md:flex items-center gap-2 px-6 py-3 rounded-full hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/10 backdrop-blur-md bg-white/5 transition-all text-sm font-medium outline-none text-white cursor-pointer h-12">
+                    <button 
+                        onClick={() => setIsModalOpen(true)}
+                        className="hidden md:flex items-center gap-2 px-6 py-3 rounded-full hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/10 backdrop-blur-md bg-white/5 transition-all text-sm font-medium outline-none text-white cursor-pointer h-12"
+                    >
                         <Calendar size={16} />
                         <span>Book a Call</span>
                     </button>
                     {/* Mobile: Book a Call icon only */}
-                    <button className="md:hidden flex items-center justify-center w-12 h-12 rounded-full border border-white/10 backdrop-blur-md bg-white/5 transition-all outline-none cursor-pointer hover:bg-white/10">
+                    <button 
+                        onClick={() => setIsModalOpen(true)}
+                        className="md:hidden flex items-center justify-center w-12 h-12 rounded-full border border-white/10 backdrop-blur-md bg-white/5 transition-all outline-none cursor-pointer hover:bg-white/10"
+                    >
                         <Calendar size={20} className="text-white/80" />
                     </button>
                 </div>
@@ -188,6 +202,10 @@ export default function Navbar() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 10 }}
                                 transition={{ delay: navItems.length * 0.07, duration: 0.3 }}
+                                onClick={() => {
+                                    setIsModalOpen(true);
+                                    setMobileMenuOpen(false);
+                                }}
                                 className="flex items-center justify-center gap-2 w-full max-w-sm py-4 mt-4 text-lg font-medium text-white/70 hover:text-white rounded-2xl border border-white/10 hover:bg-white/5 transition-all outline-none cursor-pointer"
                             >
                                 <Calendar size={18} />
@@ -197,6 +215,9 @@ export default function Navbar() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Book A Call Modal */}
+            <BookCallModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </>
     );
 }

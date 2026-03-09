@@ -29,9 +29,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased bg-[#0c0a1a] text-white min-h-screen relative`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased bg-slate-50 text-slate-900 dark:bg-[#0c0a1a] dark:text-white min-h-screen relative transition-colors duration-300`}
       >
         <DotGrid />
         <div className="relative z-[2] flex flex-col min-h-screen">
