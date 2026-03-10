@@ -41,9 +41,13 @@ export default function BookCallModal({ isOpen, onClose }: BookCallModalProps) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="absolute inset-0 bg-black/40 backdrop-blur-xl"
+                        className="absolute inset-0 bg-black/60 backdrop-blur-2xl"
                         onClick={onClose}
-                    />
+                    >
+                        {/* Subtle glow blobs */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+                        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+                    </motion.div>
 
                     {/* Modal Content */}
                     <motion.div
@@ -51,12 +55,9 @@ export default function BookCallModal({ isOpen, onClose }: BookCallModalProps) {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
-                        className="relative w-full max-w-[500px] overflow-hidden rounded-[24px] bg-[#111111]/95 backdrop-blur-xl border border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+                        className="relative w-full max-w-md overflow-hidden rounded-2xl bg-[#0b0f1a]/90 backdrop-blur-md border border-white/10 shadow-2xl shadow-purple-500/10"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Top Accent Line */}
-                        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
-
                         {/* Close Button */}
                         <button
                             onClick={onClose}
@@ -74,16 +75,12 @@ export default function BookCallModal({ isOpen, onClose }: BookCallModalProps) {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                                 {/* Book a call card */}
                                 <Link
-                                    href="https://cal.com/prashant"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="group relative flex flex-col items-center justify-center gap-3 p-6 rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 hover:scale-[1.05] hover:border-purple-400/50 hover:bg-purple-500/5 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)]"
+                                    href="/book-call"
+                                    className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/10 bg-[#161b22]/50 transition-all duration-200 hover:scale-105 hover:border-purple-400"
                                 >
-                                    <Calendar size={20} className="text-purple-400" />
-                                    <div className="flex flex-col gap-1.5 mt-auto">
-                                        <span className="text-[15px] font-semibold text-white">Book a call</span>
-                                        <span className="text-[11px] font-bold tracking-wider text-white/40 group-hover:text-white/60 transition-colors uppercase">30 MIN CALL</span>
-                                    </div>
+                                    <Calendar size={28} className="text-white/60 group-hover:text-purple-400 transition-colors duration-200 mb-3" />
+                                    <span className="text-base font-semibold text-white mb-1">Book a call</span>
+                                    <span className="text-xs font-bold tracking-wider text-white/40 group-hover:text-white/60 transition-colors uppercase">30 MIN CALL</span>
                                 </Link>
 
                                 {/* Email me card */}
@@ -91,12 +88,11 @@ export default function BookCallModal({ isOpen, onClose }: BookCallModalProps) {
                                     href={`https://mail.google.com/mail/?view=cm&fs=1&to=${email}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group relative flex flex-col items-center justify-center gap-3 p-6 rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 hover:scale-[1.05] hover:border-blue-400/50 hover:bg-blue-500/5 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)]"
+                                    className="group flex flex-col items-center justify-center p-6 rounded-2xl border border-white/10 bg-[#161b22]/50 transition-all duration-200 hover:scale-105 hover:border-purple-400"
                                 >
-                                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:bg-blue-500/20 group-hover:scale-110 transition-all duration-300">
-                                        <Mail size={24} />
-                                    </div>
-                                    <span className="text-xs font-semibold tracking-wider text-white/80 group-hover:text-white whitespace-nowrap">OPEN GMAIL</span>
+                                    <Mail size={28} className="text-white/60 group-hover:text-purple-400 transition-colors duration-200 mb-3" />
+                                    <span className="text-base font-semibold text-white mb-1">Email me</span>
+                                    <span className="text-xs font-bold tracking-wider text-white/40 group-hover:text-white/60 transition-colors uppercase">OPEN GMAIL</span>
                                 </Link>
                             </div>
 
