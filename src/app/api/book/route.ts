@@ -50,6 +50,17 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        // Calculate expiry: meeting date + time + 30 min duration
+        const [hours, minutes] = time.split(":").map(Number);
+        const meetingDate = new Date(date);
+        meetingDate.setHours(hours, minutes + 30, 0, 0); // 30 min after meeting starts
+
+        // Ensure TTL index exists (MongoDB auto-deletes docs when expiresAt passes)
+        await db.collection("bookings").createIndex(
+            { expiresAt: 1 },
+            { expireAfterSeconds: 0 }
+        );
+
         // Save booking
         await db.collection("bookings").insertOne({
             name,
@@ -57,6 +68,7 @@ export async function POST(req: NextRequest) {
             date,
             time,
             createdAt: new Date(),
+            expiresAt: meetingDate, // MongoDB will auto-delete after this time
         });
 
         // Send confirmation email

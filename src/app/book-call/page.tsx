@@ -14,6 +14,7 @@ import {
     User,
     ArrowLeft,
     Loader2,
+    Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -486,7 +487,7 @@ export default function BookCallPage() {
                                                     {submitting ? (
                                                         <Loader2 size={16} className="animate-spin" />
                                                     ) : (
-                                                        <Sparkles size={16} className="group-hover:rotate-12 transition-transform" />
+                                                        <Calendar size={16} className="group-hover:rotate-12 transition-transform" />
                                                     )}
                                                     {submitting ? "Booking..." : "CONFIRM BOOKING"}
                                                 </button>
