@@ -267,10 +267,10 @@ export default function About() {
                         <h2 className="text-2xl md:text-3xl font-bold mb-2 font-heading">Mindset</h2>
                         <div className="w-10 h-[2px] bg-purple-500 mb-4"></div>
                         <p className="text-sm text-white/70 mb-4 leading-relaxed tracking-wide">
-                            Building <strong className="text-white font-semibold">more than software.</strong> My passions provide the <strong className="text-white font-semibold">discipline and focus</strong> I need to grow.
+                            Building <strong className="text-white font-semibold">more than software.</strong> I believe strong systems come from <strong className="text-white font-semibold">disciplined thinking,</strong> curiosity, and continuous learning.
                         </p>
                         <p className="text-sm text-white/70 mb-4 leading-relaxed tracking-wide">
-                            Mastering body and mind is my path to <strong className="text-white font-semibold">excellence.</strong>
+                            I focus on understanding problems deeply before writing code, ensuring solutions are <strong className="text-white font-semibold">scalable, efficient, and meaningful.</strong>
                         </p>
                     </div>
 
@@ -374,10 +374,10 @@ export default function About() {
                     <h2 className="text-2xl md:text-3xl font-bold mb-2 font-heading">Craft</h2>
                     <div className="w-10 h-[2px] bg-purple-500 mb-4"></div>
                     <p className="text-sm text-white/70 mb-4 leading-relaxed">
-                        Building scalable <strong className="text-white font-semibold">apps, websites, and automations.</strong>
+                        Designing and building scalable <strong className="text-white font-semibold">applications, intelligent systems,</strong> and modern web experiences powered by AI.
                     </p>
                     <p className="text-sm text-white/70 mb-4 leading-relaxed">
-                        I understand what advantages modern tech can provide, helping me advise on the solutions a business actually needs.
+                        I focus on writing clean, maintainable code and turning ideas into <strong className="text-white font-semibold">reliable, production-ready solutions.</strong>
                     </p>
 
                     <div className="relative w-[calc(100%+3rem)] -mx-6 md:w-[calc(100%+3.5rem)] md:-mx-7 mb-4 mt-auto bg-black/40 border-y border-white/5 py-3">
@@ -403,7 +403,7 @@ export default function About() {
 
                     <div className="pt-3 border-t border-white/10">
                         <div className="flex flex-col gap-1.5">
-                            <p className="text-xs text-white/70 leading-relaxed max-w-[95%]">Active Open Source contributor. Look forward to solving complex bugs.</p>
+                            <p className="text-xs text-white/70 leading-relaxed max-w-[95%]">Active open-source contributor and hackathon participant. Always excited to collaborate and build impactful technology.</p>
                             <div className="flex items-center gap-1.5 mt-1 bg-[#0a0a0f]/50 p-2 rounded-lg border border-white/5 w-fit">
                                 <span className="relative flex h-1.5 w-1.5">
                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>

@@ -258,12 +258,9 @@ export default function BookCallPage() {
                                         </div>
                                     </div>
 
-                                    <h2 className="text-xl font-bold text-white mb-1 font-heading tracking-tight">
+                                    <h2 className="text-xl font-bold text-white mb-10 font-heading tracking-tight">
                                         Prashant Kumar
                                     </h2>
-                                    <p className="text-white/40 text-sm leading-relaxed mb-6">
-                                        Quick video meeting to discuss projects, collaborations, or opportunities.
-                                    </p>
 
                                     {/* Detail pills */}
                                     <div className="space-y-2.5">
@@ -355,7 +352,7 @@ export default function BookCallPage() {
                                                             : selected
                                                                 ? "bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-[0_0_20px_rgba(139,92,246,0.35)] font-semibold"
                                                                 : today
-                                                                    ? "bg-purple-500/15 text-purple-300 hover:bg-purple-500/25 border border-purple-500/20"
+                                                                    ? "text-purple-300 hover:bg-white/[0.06]"
                                                                     : "text-white/60 hover:bg-white/[0.06] hover:text-white cursor-pointer"
                                                         }
                                                     `}
@@ -375,29 +372,27 @@ export default function BookCallPage() {
                                     <div className="flex items-center justify-between mb-5">
                                         <div className="flex items-center gap-2">
                                             <Clock size={14} className="text-purple-400" />
-                                            <p className="text-[11px] font-bold tracking-[0.15em] text-white/40 uppercase">
+                                            <p className="text-[12px] font-bold tracking-[0.15em] text-white/40 uppercase">
                                                 Available Slots
                                             </p>
                                         </div>
                                         {/* 24H / 12H toggle */}
-                                        <div className="flex items-center rounded-lg bg-white/[0.04] border border-white/[0.08] p-0.5">
+                                        <div className="flex items-center rounded-md bg-white/[0.04] border border-white/[0.08] p-0.5">
                                             <button
                                                 onClick={() => setTimeFormat("24h")}
-                                                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-200 outline-none ${
-                                                    timeFormat === "24h"
-                                                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                                                        : "text-white/35 hover:text-white/60 border border-transparent"
-                                                }`}
+                                                className={`px-2 py-0.5 rounded text-[9px] font-semibold transition-all duration-200 outline-none ${timeFormat === "24h"
+                                                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                                    : "text-white/35 hover:text-white/60 border border-transparent"
+                                                    }`}
                                             >
                                                 24H
                                             </button>
                                             <button
                                                 onClick={() => setTimeFormat("12h")}
-                                                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-200 outline-none ${
-                                                    timeFormat === "12h"
-                                                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                                                        : "text-white/35 hover:text-white/60 border border-transparent"
-                                                }`}
+                                                className={`px-2 py-0.5 rounded text-[9px] font-semibold transition-all duration-200 outline-none ${timeFormat === "12h"
+                                                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                                    : "text-white/35 hover:text-white/60 border border-transparent"
+                                                    }`}
                                             >
                                                 12H
                                             </button>
@@ -523,11 +518,10 @@ export default function BookCallPage() {
                                                             value={formEmail}
                                                             onChange={(e) => setFormEmail(e.target.value)}
                                                             placeholder="john@example.com"
-                                                            className={`w-full bg-white/[0.03] border rounded-xl pl-10 pr-4 py-3.5 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:bg-white/[0.04] transition-all duration-200 ${
-                                                                formEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail)
-                                                                    ? "border-red-500/50 focus:border-red-500/60 focus:ring-red-500/10"
-                                                                    : "border-white/[0.08] focus:border-purple-500/40 focus:ring-purple-500/10"
-                                                            }`}
+                                                            className={`w-full bg-white/[0.03] border rounded-xl pl-10 pr-4 py-3.5 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:bg-white/[0.04] transition-all duration-200 ${formEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail)
+                                                                ? "border-red-500/50 focus:border-red-500/60 focus:ring-red-500/10"
+                                                                : "border-white/[0.08] focus:border-purple-500/40 focus:ring-purple-500/10"
+                                                                }`}
                                                         />
                                                     </div>
                                                     {formEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail) && (

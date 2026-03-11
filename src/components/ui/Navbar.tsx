@@ -95,15 +95,15 @@ export default function Navbar() {
             >
                 {/* Left side: Dark Mode Toggle */}
                 <div className="flex-1 flex justify-start">
-                    <button 
-                        className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] border border-white/10 backdrop-blur-md bg-white/5 transition-all outline-none cursor-pointer"
+                    <button
+                        className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-white/10 hover:shadow-[0_0_20px_rgba(255,255,255,0.08)] border border-white/[0.15] backdrop-blur-2xl bg-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all outline-none cursor-pointer"
                     >
                         <Moon size={20} className="text-white/80" />
                     </button>
                 </div>
 
                 {/* Center: Navigation Links - Desktop only */}
-                <div className="hidden md:flex items-center gap-1 p-1.5 rounded-full border border-white/10 bg-[#0c0a1a]/60 backdrop-blur-lg">
+                <div className="hidden md:flex items-center gap-1 p-1.5 rounded-full border border-white/[0.15] bg-[#0c0a1a]/40 backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_8px_32px_rgba(0,0,0,0.3)]">
                     {navItems.map((item) => (
                         <button
                             key={item.name}
@@ -145,17 +145,17 @@ export default function Navbar() {
 
                 {/* Right side: Book a Call - Desktop only */}
                 <div className="flex-1 flex justify-end">
-                    <button 
+                    <button
                         onClick={() => setIsModalOpen(true)}
-                        className="hidden md:flex items-center gap-2 px-6 py-3 rounded-full hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/10 backdrop-blur-md bg-white/5 transition-all text-sm font-medium outline-none text-white cursor-pointer h-12"
+                        className="hidden md:flex items-center gap-2 px-6 py-3 rounded-full hover:bg-white/10 hover:shadow-[0_0_20px_rgba(255,255,255,0.08)] border border-white/[0.15] backdrop-blur-2xl bg-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all text-sm font-medium outline-none text-white cursor-pointer h-12"
                     >
                         <Calendar size={16} />
                         <span>Book a Call</span>
                     </button>
                     {/* Mobile: Book a Call icon only */}
-                    <button 
+                    <button
                         onClick={() => setIsModalOpen(true)}
-                        className="md:hidden flex items-center justify-center w-12 h-12 rounded-full border border-white/10 backdrop-blur-md bg-white/5 transition-all outline-none cursor-pointer hover:bg-white/10"
+                        className="md:hidden flex items-center justify-center w-12 h-12 rounded-full border border-white/[0.15] backdrop-blur-2xl bg-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-all outline-none cursor-pointer hover:bg-white/10"
                     >
                         <Calendar size={20} className="text-white/80" />
                     </button>
