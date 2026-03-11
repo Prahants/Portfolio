@@ -27,10 +27,13 @@ const MONTHS = [
 ];
 
 const TIME_SLOTS = [
-    "10:00", "10:30",
-    "11:00", "11:30", "12:00", "12:30",
-    "13:00", "13:30", "14:00", "14:30",
-    "15:00", "15:30", "16:00", "16:30",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
     "17:00",
 ];
 
@@ -51,6 +54,13 @@ function isToday(year: number, month: number, day: number) {
     return now.getFullYear() === year && now.getMonth() === month && now.getDate() === day;
 }
 
+function to12h(time: string) {
+    const [h, m] = time.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const hour = h % 12 || 12;
+    return `${hour}:${String(m).padStart(2, "0")} ${period}`;
+}
+
 function isPast(year: number, month: number, day: number) {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -68,6 +78,7 @@ export default function BookCallPage() {
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
+    const [timeFormat, setTimeFormat] = useState<"24h" | "12h">("12h");
 
     const [formName, setFormName] = useState("");
     const [formEmail, setFormEmail] = useState("");
@@ -361,11 +372,36 @@ export default function BookCallPage() {
 
                                 {/* ─── Right Panel — Time Slots ─── */}
                                 <div className="p-7 lg:p-8">
-                                    <div className="flex items-center gap-2 mb-5">
-                                        <Clock size={14} className="text-purple-400" />
-                                        <p className="text-[11px] font-bold tracking-[0.15em] text-white/40 uppercase">
-                                            Available Slots
-                                        </p>
+                                    <div className="flex items-center justify-between mb-5">
+                                        <div className="flex items-center gap-2">
+                                            <Clock size={14} className="text-purple-400" />
+                                            <p className="text-[11px] font-bold tracking-[0.15em] text-white/40 uppercase">
+                                                Available Slots
+                                            </p>
+                                        </div>
+                                        {/* 24H / 12H toggle */}
+                                        <div className="flex items-center rounded-lg bg-white/[0.04] border border-white/[0.08] p-0.5">
+                                            <button
+                                                onClick={() => setTimeFormat("24h")}
+                                                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-200 outline-none ${
+                                                    timeFormat === "24h"
+                                                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                                        : "text-white/35 hover:text-white/60 border border-transparent"
+                                                }`}
+                                            >
+                                                24H
+                                            </button>
+                                            <button
+                                                onClick={() => setTimeFormat("12h")}
+                                                className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-200 outline-none ${
+                                                    timeFormat === "12h"
+                                                        ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                                        : "text-white/35 hover:text-white/60 border border-transparent"
+                                                }`}
+                                            >
+                                                12H
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {!selectedDate ? (
@@ -388,11 +424,23 @@ export default function BookCallPage() {
                                         <motion.div
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
-                                            className="grid grid-cols-2 gap-2 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar"
+                                            className="grid grid-cols-1 gap-2 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar"
                                         >
                                             {TIME_SLOTS.map((time, i) => {
                                                 const isBooked = bookedSlots.includes(time);
                                                 const isSelected = selectedTime === time;
+
+                                                // Disable slots that have already passed today
+                                                const isTimePast = (() => {
+                                                    if (!selectedDate) return false;
+                                                    const today = new Date();
+                                                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+                                                    if (selectedDate !== todayStr) return false;
+                                                    const [h, m] = time.split(":").map(Number);
+                                                    return h < today.getHours() || (h === today.getHours() && m <= today.getMinutes());
+                                                })();
+
+                                                const isDisabled = isBooked || isTimePast;
 
                                                 return (
                                                     <motion.button
@@ -400,11 +448,11 @@ export default function BookCallPage() {
                                                         initial={{ opacity: 0, y: 5 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: i * 0.02 }}
-                                                        disabled={isBooked}
+                                                        disabled={isDisabled}
                                                         onClick={() => setSelectedTime(time)}
                                                         className={`
                                                             py-3 px-3 rounded-xl text-sm font-medium transition-all duration-200 outline-none border
-                                                            ${isBooked
+                                                            ${isDisabled
                                                                 ? "bg-white/[0.01] text-white/12 cursor-not-allowed line-through border-white/[0.03]"
                                                                 : isSelected
                                                                     ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)] border-purple-500/30 font-semibold"
@@ -412,7 +460,7 @@ export default function BookCallPage() {
                                                             }
                                                         `}
                                                     >
-                                                        {time}
+                                                        {timeFormat === "24h" ? time : to12h(time)}
                                                     </motion.button>
                                                 );
                                             })}
@@ -475,13 +523,23 @@ export default function BookCallPage() {
                                                             value={formEmail}
                                                             onChange={(e) => setFormEmail(e.target.value)}
                                                             placeholder="john@example.com"
-                                                            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3.5 text-sm text-white placeholder-white/20 focus:border-purple-500/40 focus:outline-none focus:ring-2 focus:ring-purple-500/10 focus:bg-white/[0.04] transition-all duration-200"
+                                                            className={`w-full bg-white/[0.03] border rounded-xl pl-10 pr-4 py-3.5 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:bg-white/[0.04] transition-all duration-200 ${
+                                                                formEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail)
+                                                                    ? "border-red-500/50 focus:border-red-500/60 focus:ring-red-500/10"
+                                                                    : "border-white/[0.08] focus:border-purple-500/40 focus:ring-purple-500/10"
+                                                            }`}
                                                         />
                                                     </div>
+                                                    {formEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail) && (
+                                                        <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1">
+                                                            <span className="w-1 h-1 rounded-full bg-red-400" />
+                                                            Invalid email address
+                                                        </p>
+                                                    )}
                                                 </div>
                                                 <button
                                                     onClick={handleSubmit}
-                                                    disabled={submitting || !formName || !formEmail}
+                                                    disabled={submitting || !formName || !formEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail)}
                                                     className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold text-sm hover:shadow-[0_0_30px_rgba(139,92,246,0.3)] hover:brightness-110 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 shrink-0 cursor-pointer group"
                                                 >
                                                     {submitting ? (
