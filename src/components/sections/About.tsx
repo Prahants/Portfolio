@@ -267,10 +267,10 @@ export default function About() {
                         <h2 className="text-2xl md:text-3xl font-bold mb-2 font-heading">Mindset</h2>
                         <div className="w-10 h-[2px] bg-purple-500 mb-4"></div>
                         <p className="text-sm text-white/70 mb-4 leading-relaxed tracking-wide">
-                            Building <strong className="text-white font-semibold">more than software.</strong> I believe strong systems come from <strong className="text-white font-semibold">disciplined thinking,</strong> curiosity, and continuous learning.
+                            Building <strong className="text-white font-semibold">more than software.</strong> Strong systems come from <strong className="text-white font-semibold">disciplined thinking</strong> and curiosity.
                         </p>
                         <p className="text-sm text-white/70 mb-4 leading-relaxed tracking-wide">
-                            I focus on understanding problems deeply before writing code, ensuring solutions are <strong className="text-white font-semibold">scalable, efficient, and meaningful.</strong>
+                            Understanding problems deeply before writing <strong className="text-white font-semibold">scalable, efficient</strong> code.
                         </p>
                     </div>
 
